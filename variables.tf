@@ -3,6 +3,22 @@ variable "bootstrap_repo_url" {
   default = "https://github.com/joerx/lab-cluster.sh.git"
 }
 
+variable "bootstrap_chart_version" {
+  default = "0.1.0"
+}
+
+variable "bootstrap_chart_repo" {
+  default = "https://joerx.github.io/lab-cluster.sh"
+}
+
+variable "argocd_chart_version" {
+  default = "9.4.2"
+}
+
+variable "argocd_chart_repo" {
+  default = "https://argoproj.github.io/argo-helm"
+}
+
 variable "target_revision" {
   type    = string
   default = "main"
@@ -46,11 +62,7 @@ variable "autosync" {
   type    = bool
 }
 
-variable "argocd_chart_version" {
-  default = "9.4.2"
-}
-
 variable "external_dns" {
-  default = true
+  default = false
   type    = bool
 }

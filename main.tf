@@ -3,24 +3,23 @@ locals {
   external_secrets_namespace = "external-secrets"
   cluster_domain             = var.cluster_domain != null ? var.cluster_domain : "${var.cluster_name}.local"
 
-  helm_values = {
-    "cluster.name"           = var.cluster_name,
-    "cluster.domain"         = local.cluster_domain,
-    "externalDNS.enabled"    = tostring(var.external_dns),
-    "source.repoURL"         = var.bootstrap_repo_url,
-    "source.targetRevistion" = var.target_revision,
-    "source.username"        = var.github_username,
-    "autosync.enabled"       = tostring(var.autosync),
-    "infisical.project"      = var.infisical_project,
-    "infisical.path"         = var.infisical_path
+  bootstrap_values = {
+    "cluster.name"          = var.cluster_name,
+    "cluster.domain"        = local.cluster_domain,
+    "externalDNS.enabled"   = var.external_dns,
+    "source.repoURL"        = var.bootstrap_repo_url,
+    "source.targetRevision" = var.target_revision,
+    "source.username"       = var.github_username,
+    "autosync.enabled"      = var.autosync,
+    "infisical.project"     = var.infisical_project,
+    "infisical.path"        = var.infisical_path
   }
 }
-
 
 resource "helm_release" "argocd" {
   name             = "argo-cd"
   chart            = "argo-cd"
-  repository       = "https://argoproj.github.io/argo-helm"
+  repository       = var.argocd_chart_repo
   version          = var.argocd_chart_version
   namespace        = local.argocd_namespace
   create_namespace = true
@@ -30,8 +29,8 @@ resource "helm_release" "argocd" {
 resource "helm_release" "bootstrap" {
   name       = "bootstrap-argo"
   chart      = "bootstrap-argo"
-  repository = "https://joerx.github.io/lab-cluster.sh"
-  version    = "0.1.0"
+  repository = var.bootstrap_chart_repo
+  version    = var.bootstrap_chart_version
   namespace  = local.argocd_namespace
 
   set_sensitive = [
@@ -42,7 +41,7 @@ resource "helm_release" "bootstrap" {
   ]
 
   set = [
-    for k, v in local.helm_values : {
+    for k, v in local.bootstrap_values : {
       name  = k,
       value = v
     }
@@ -56,8 +55,8 @@ resource "helm_release" "bootstrap" {
 resource "helm_release" "bootstrap_secrets" {
   name             = "bootstrap-secrets"
   chart            = "bootstrap-secrets"
-  repository       = "https://joerx.github.io/lab-cluster.sh"
-  version          = "0.1.0"
+  repository       = var.bootstrap_chart_repo
+  version          = var.bootstrap_chart_version
   namespace        = local.external_secrets_namespace
   create_namespace = true
 
