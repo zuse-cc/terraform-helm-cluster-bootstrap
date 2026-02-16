@@ -1,7 +1,9 @@
 terraform {
+  required_version = "~> 1.0"
+
   required_providers {
-    linode = {
-      source  = "linode/linode"
+    helm = {
+      source  = "hashicorp/helm"
       version = "~> 3.0"
     }
   }

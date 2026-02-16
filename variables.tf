@@ -1,26 +1,56 @@
-variable "region" {
-  description = "Linode region to create the bucket in"
-  type        = string
+variable "bootstrap_repo_url" {
+  type    = string
+  default = "https://github.com/joerx/lab-cluster.sh.git"
 }
 
-variable "stage" {
-  description = "Deployment stage"
-  type        = string
+variable "target_revision" {
+  type    = string
+  default = "main"
 }
 
-variable "service" {
-  description = "Service name"
-  type        = string
+variable "github_token" {
+  type = string
 }
 
-variable "versioning" {
-  description = "Enable versioning for the bucket"
+variable "github_username" {
+  type = string
+}
+
+variable "infisical_auth" {
   type = object({
-    enabled           = bool
-    access_key_id     = optional(string)
-    secret_access_key = optional(string)
+    client_id     = string
+    client_secret = string
   })
-  default = {
-    enabled = false
-  }
+}
+
+variable "infisical_project" {
+  type = string
+}
+
+variable "infisical_path" {
+  type    = string
+  default = "/shared/argocd/bootstrap"
+}
+
+variable "cluster_name" {
+  type = string
+}
+
+variable "cluster_domain" {
+  type    = string
+  default = null
+}
+
+variable "autosync" {
+  default = false
+  type    = bool
+}
+
+variable "argocd_chart_version" {
+  default = "9.4.2"
+}
+
+variable "external_dns" {
+  default = true
+  type    = bool
 }
