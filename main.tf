@@ -1,21 +1,74 @@
 locals {
-  label = "${var.stage}-${var.service}-${random_string.s.result}"
-  tags  = ["stage:${var.stage}", "service:${var.service}", "component:backups"]
+  argocd_namespace           = "argocd"
+  external_secrets_namespace = "external-secrets"
+  cluster_domain             = var.cluster_domain != null ? var.cluster_domain : "${var.cluster_name}.local"
+
+  helm_values = {
+    "cluster.name"           = var.cluster_name,
+    "cluster.domain"         = local.cluster_domain,
+    "externalDNS.enabled"    = tostring(var.external_dns),
+    "source.repoURL"         = var.bootstrap_repo_url,
+    "source.targetRevistion" = var.target_revision,
+    "source.username"        = var.github_username,
+    "autosync.enabled"       = tostring(var.autosync),
+    "infisical.project"      = var.infisical_project,
+    "infisical.path"         = var.infisical_path
+  }
 }
 
-resource "random_string" "s" {
-  length  = 4
-  special = false
-  upper   = false
+
+resource "helm_release" "argocd" {
+  name             = "argo-cd"
+  chart            = "argo-cd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  version          = var.argocd_chart_version
+  namespace        = local.argocd_namespace
+  create_namespace = true
+  wait             = true
 }
 
-resource "linode_object_storage_bucket" "b" {
-  region = var.region
-  label  = local.label
+resource "helm_release" "bootstrap" {
+  name       = "bootstrap-argo"
+  chart      = "bootstrap-argo"
+  repository = "https://joerx.github.io/lab-cluster.sh"
+  version    = "0.1.0"
+  namespace  = local.argocd_namespace
 
-  access_key = var.versioning.enabled ? var.versioning.access_key_id : null
-  secret_key = var.versioning.enabled ? var.versioning.secret_access_key : null
+  set_sensitive = [
+    {
+      name  = "source.password"
+      value = var.github_token
+    }
+  ]
 
-  versioning = var.versioning.enabled
-  acl        = "private"
+  set = [
+    for k, v in local.helm_values : {
+      name  = k,
+      value = v
+    }
+  ]
+
+  depends_on = [
+    helm_release.argocd
+  ]
+}
+
+resource "helm_release" "bootstrap_secrets" {
+  name             = "bootstrap-secrets"
+  chart            = "bootstrap-secrets"
+  repository       = "https://joerx.github.io/lab-cluster.sh"
+  version          = "0.1.0"
+  namespace        = local.external_secrets_namespace
+  create_namespace = true
+
+  set_sensitive = [
+    {
+      name  = "universalAuth.clientId"
+      value = var.infisical_auth.client_id
+    },
+    {
+      name  = "universalAuth.clientSecret"
+      value = var.infisical_auth.client_secret
+    }
+  ]
 }
