@@ -9,11 +9,21 @@ locals {
     "externalDNS.enabled"   = var.external_dns,
     "source.repoURL"        = var.bootstrap_repo_url,
     "source.targetRevision" = var.target_revision,
-    "source.username"       = var.github_username,
     "autosync.enabled"      = var.autosync,
     "infisical.project"     = var.infisical_project,
     "infisical.path"        = var.infisical_path
   }
+}
+
+resource "tls_private_key" "bootstrap" {
+  algorithm = "ED25519"
+}
+
+resource "github_repository_deploy_key" "bootstrap" {
+  title      = var.cluster_name
+  repository = var.github_repo
+  key        = tls_private_key.bootstrap.public_key_openssh
+  read_only  = true
 }
 
 resource "helm_release" "argocd" {
@@ -28,15 +38,15 @@ resource "helm_release" "argocd" {
 
 resource "helm_release" "bootstrap" {
   name       = "bootstrap-argo"
-  chart      = "bootstrap-argo"
+  chart      = "cluster-bootstrap-argo"
   repository = var.bootstrap_chart_repo
   version    = var.bootstrap_chart_version
   namespace  = local.argocd_namespace
 
   set_sensitive = [
     {
-      name  = "source.password"
-      value = var.github_token
+      name  = "source.sshPrivateKey"
+      value = tls_private_key.bootstrap.private_key_openssh
     }
   ]
 
@@ -48,13 +58,14 @@ resource "helm_release" "bootstrap" {
   ]
 
   depends_on = [
-    helm_release.argocd
+    helm_release.argocd,
+    github_repository_deploy_key.bootstrap,
   ]
 }
 
 resource "helm_release" "bootstrap_secrets" {
   name             = "bootstrap-secrets"
-  chart            = "bootstrap-secrets"
+  chart            = "cluster-bootstrap-secrets"
   repository       = var.bootstrap_chart_repo
   version          = var.bootstrap_chart_version
   namespace        = local.external_secrets_namespace

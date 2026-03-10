@@ -1,10 +1,8 @@
 module "argocd" {
   source = "./.."
 
-  autosync        = true
-  cluster_name    = var.cluster_name
-  github_token    = var.github_token
-  github_username = var.github_username
+  autosync     = true
+  cluster_name = var.cluster_name
 
   infisical_auth = {
     client_id     = var.infisical_auth_client_id
