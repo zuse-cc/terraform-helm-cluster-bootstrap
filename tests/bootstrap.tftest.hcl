@@ -1,5 +1,7 @@
 mock_provider "helm" {}
 
+mock_provider "github" {}
+
 variables {
   cluster_name    = "dev-my-cluster"
   github_token    = "example-token"
