@@ -21,13 +21,6 @@ variable "infisical_path" {
   default = "/shared/argocd/bootstrap"
 }
 
-variable "github_token" {
-  type = string
-}
-
-variable "github_username" {
-  type = string
-}
 
 variable "cluster_name" {
   default = "my-lab-cluster"

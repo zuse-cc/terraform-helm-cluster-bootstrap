@@ -1,14 +1,14 @@
 variable "bootstrap_repo_url" {
   type    = string
-  default = "https://github.com/joerx/lab-cluster.sh.git"
+  default = "git@github.com:joerx/lab-cluster.sh.git"
 }
 
 variable "bootstrap_chart_version" {
-  default = "0.1.0"
+  default = "0.1.0-b97187d5"
 }
 
 variable "bootstrap_chart_repo" {
-  default = "https://joerx.github.io/lab-cluster.sh"
+  default = "oci://ghcr.io/joerx/helm"
 }
 
 variable "argocd_chart_version" {
@@ -24,12 +24,10 @@ variable "target_revision" {
   default = "main"
 }
 
-variable "github_token" {
-  type = string
-}
-
-variable "github_username" {
-  type = string
+variable "github_repo" {
+  type        = string
+  description = "GitHub repository name to register the cluster deploy key on"
+  default     = "lab-cluster.sh"
 }
 
 variable "infisical_auth" {
