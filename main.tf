@@ -20,7 +20,7 @@ resource "tls_private_key" "bootstrap" {
 }
 
 resource "github_repository_deploy_key" "bootstrap" {
-  title      = var.cluster_name
+  title      = "k8s-${var.cluster_name}"
   repository = var.github_repo
   key        = tls_private_key.bootstrap.public_key_openssh
   read_only  = true
