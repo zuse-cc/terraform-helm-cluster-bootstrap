@@ -34,6 +34,27 @@ resource "helm_release" "argocd" {
   namespace        = local.argocd_namespace
   create_namespace = true
   wait             = true
+
+  values = [
+    yamlencode({
+      configs = {
+        params = {
+          "server.insecure" = "true"
+        }
+      }
+      server = {
+        ingress = {
+          enabled          = true
+          ingressClassName = "nginx"
+          hostname         = "argocd.${local.cluster_domain}"
+          tls              = true
+          annotations = {
+            "cert-manager.io/cluster-issuer" = "cluster-issuer"
+          }
+        }
+      }
+    })
+  ]
 }
 
 resource "helm_release" "bootstrap" {
