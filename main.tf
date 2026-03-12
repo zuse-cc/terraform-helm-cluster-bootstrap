@@ -2,6 +2,7 @@ locals {
   argocd_namespace           = "argocd"
   external_secrets_namespace = "external-secrets"
   cluster_domain             = var.cluster_domain != null ? var.cluster_domain : "${var.cluster_name}.local"
+  letsencrypt_email          = var.letsencrypt_email != null ? var.letsencrypt_email : "hostmaster@${local.cluster_domain}"
 
   bootstrap_values = {
     "cluster.name"          = var.cluster_name,
@@ -11,7 +12,9 @@ locals {
     "source.targetRevision" = var.target_revision,
     "autosync.enabled"      = var.autosync,
     "infisical.project"     = var.infisical_project,
-    "infisical.path"        = var.infisical_path
+    "infisical.path"        = var.infisical_path,
+    "letsencrypt.enabled"   = var.letsencrypt_enabled,
+    "letsencrypt.email"     = local.letsencrypt_email
   }
 }
 
