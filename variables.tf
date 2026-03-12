@@ -4,7 +4,7 @@ variable "bootstrap_repo_url" {
 }
 
 variable "bootstrap_chart_version" {
-  default = "0.1.0-b97187d5"
+  default = "0.1.0-d47d349"
 }
 
 variable "bootstrap_chart_repo" {
@@ -63,4 +63,14 @@ variable "autosync" {
 variable "external_dns" {
   default = false
   type    = bool
+}
+
+variable "letsencrypt_enabled" {
+  default = true
+  type    = bool
+}
+
+variable "letsencrypt_email" {
+  type    = string
+  default = null
 }
