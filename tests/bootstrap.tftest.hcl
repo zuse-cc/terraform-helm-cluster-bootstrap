@@ -2,15 +2,21 @@ mock_provider "helm" {}
 
 mock_provider "github" {}
 
-variables {
-  cluster_name    = "dev-my-cluster"
-  github_token    = "example-token"
-  github_username = "octocat"
+mock_provider "infisical" {}
 
-  infisical_project = "abc123"
-  infisical_auth = {
-    client_id     = "cli3nt-1d"
-    client_secret = "s3cr3t"
+variables {
+  cluster_name  = "dev-my-cluster"
+  ghcr_username = "example-token"
+  ghcr_password = "octocat"
+
+  infisical = {
+    project_slug = "abc123"
+    path         = "/"
+    environment  = "tst"
+    auth = {
+      client_id     = "cli3nt-1d"
+      client_secret = "s3cr3t"
+    }
   }
 }
 
@@ -48,20 +54,14 @@ run "toggle_autosync_on" {
   }
 }
 
-run "toggle_dns_off" {
-  variables {
-    external_dns = false
-  }
-
-  assert {
-    condition     = anytrue([for s in helm_release.bootstrap_secrets.set_sensitive : s.name == "universalAuth.clientId" && s.value == var.infisical_auth.client_id])
-    error_message = "should set universalAuth.clientId as sensitive value"
-  }
-}
-
 run "set_sensitive_credentials" {
   assert {
-    condition     = anytrue([for s in helm_release.bootstrap_secrets.set_sensitive : s.name == "universalAuth.clientSecret" && s.value == var.infisical_auth.client_secret])
+    condition     = anytrue([for s in helm_release.bootstrap_secrets.set_sensitive : s.name == "universalAuth.clientSecret" && s.value == var.infisical.auth.client_secret])
     error_message = "should set universalAuth.clientSecret as sensitive value"
+  }
+
+  assert {
+    condition     = anytrue([for s in helm_release.bootstrap_secrets.set_sensitive : s.name == "universalAuth.clientId" && s.value == var.infisical.auth.client_id])
+    error_message = "should set universalAuth.clientId as sensitive value"
   }
 }
