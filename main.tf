@@ -7,7 +7,7 @@ locals {
   bootstrap_values = {
     "cluster.name"          = var.cluster_name,
     "cluster.domain"        = local.cluster_domain,
-    "externalDNS.enabled"   = var.external_dns,
+    "externalDNS.enabled"   = var.external_dns_enabled,
     "source.repoURL"        = var.bootstrap_repo_url,
     "source.targetRevision" = var.target_revision,
     "autosync.enabled"      = var.autosync,
