@@ -60,8 +60,8 @@ variable "autosync" {
   type    = bool
 }
 
-variable "external_dns" {
-  default = false
+variable "external_dns_enabled" {
+  default = true
   type    = bool
 }
 
