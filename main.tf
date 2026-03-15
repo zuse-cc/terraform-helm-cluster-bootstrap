@@ -1,6 +1,7 @@
 locals {
   argocd_namespace           = "argocd"
   external_secrets_namespace = "external-secrets"
+  ghcr_pull_secret_name      = "ghcr-pull-secret"
   cluster_domain             = var.cluster_domain != null ? var.cluster_domain : "${var.cluster_name}.local"
   letsencrypt_email          = var.letsencrypt_email != null ? var.letsencrypt_email : "hostmaster@${local.cluster_domain}"
 
@@ -11,10 +12,11 @@ locals {
     "source.repoURL"        = var.bootstrap_repo_url,
     "source.targetRevision" = var.target_revision,
     "autosync.enabled"      = var.autosync,
-    "infisical.project"     = var.infisical_project,
-    "infisical.path"        = var.infisical_path,
+    "infisical.project"     = var.infisical.project_slug,
+    "infisical.path"        = var.infisical.path,
     "letsencrypt.enabled"   = var.letsencrypt_enabled,
     "letsencrypt.email"     = local.letsencrypt_email
+    "ghcr.pullSecretName"   = local.ghcr_pull_secret_name
   }
 }
 
@@ -98,11 +100,11 @@ resource "helm_release" "bootstrap_secrets" {
   set_sensitive = [
     {
       name  = "universalAuth.clientId"
-      value = var.infisical_auth.client_id
+      value = var.infisical.auth.client_id
     },
     {
       name  = "universalAuth.clientSecret"
-      value = var.infisical_auth.client_secret
+      value = var.infisical.auth.client_secret
     }
   ]
 }

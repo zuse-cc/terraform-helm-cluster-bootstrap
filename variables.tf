@@ -4,7 +4,7 @@ variable "bootstrap_repo_url" {
 }
 
 variable "bootstrap_chart_version" {
-  default = "0.1.0-33385a00"
+  default = "0.1.0-41b887f0"
 }
 
 variable "bootstrap_chart_repo" {
@@ -30,20 +30,16 @@ variable "github_repo" {
   default     = "lab-cluster.sh"
 }
 
-variable "infisical_auth" {
+variable "infisical" {
   type = object({
-    client_id     = string
-    client_secret = string
+    auth = object({
+      client_id     = string
+      client_secret = string
+    })
+    project_slug = string
+    environment  = string
+    path         = string
   })
-}
-
-variable "infisical_project" {
-  type = string
-}
-
-variable "infisical_path" {
-  type    = string
-  default = "/shared/argocd/bootstrap"
 }
 
 variable "cluster_name" {
@@ -73,4 +69,12 @@ variable "letsencrypt_enabled" {
 variable "letsencrypt_email" {
   type    = string
   default = null
+}
+
+variable "ghcr_username" {
+  type = string
+}
+
+variable "ghcr_password" {
+  type = string
 }
