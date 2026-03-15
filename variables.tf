@@ -4,7 +4,7 @@ variable "bootstrap_repo_url" {
 }
 
 variable "bootstrap_chart_version" {
-  default = "0.1.0-d47d349"
+  default = "0.1.0-33385a00"
 }
 
 variable "bootstrap_chart_repo" {
