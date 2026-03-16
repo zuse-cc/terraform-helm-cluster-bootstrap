@@ -14,8 +14,5 @@ terraform {
       source  = "hashicorp/tls"
       version = "~> 4.0"
     }
-    infisical = {
-      source = "infisical/infisical"
-    }
   }
 }

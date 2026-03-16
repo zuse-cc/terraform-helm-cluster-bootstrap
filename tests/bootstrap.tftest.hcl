@@ -2,8 +2,6 @@ mock_provider "helm" {}
 
 mock_provider "github" {}
 
-mock_provider "infisical" {}
-
 variables {
   cluster_name  = "dev-my-cluster"
   ghcr_username = "example-token"
