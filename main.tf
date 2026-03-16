@@ -17,6 +17,7 @@ locals {
     "letsencrypt.enabled"   = var.letsencrypt_enabled,
     "letsencrypt.email"     = local.letsencrypt_email
     "ghcr.pullSecretName"   = local.ghcr_pull_secret_name
+    "ghcr.username"         = var.ghcr_username
   }
 }
 
@@ -73,6 +74,10 @@ resource "helm_release" "bootstrap" {
     {
       name  = "source.sshPrivateKey"
       value = tls_private_key.bootstrap.private_key_openssh
+    },
+    {
+      name  = "ghcr.token"
+      value = var.ghcr_password
     }
   ]
 
