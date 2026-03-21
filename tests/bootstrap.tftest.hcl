@@ -2,6 +2,8 @@ mock_provider "helm" {}
 
 mock_provider "github" {}
 
+mock_provider "infisical" {}
+
 variables {
   cluster_name  = "dev-my-cluster"
   ghcr_username = "example-token"
@@ -61,5 +63,36 @@ run "set_sensitive_credentials" {
   assert {
     condition     = anytrue([for s in helm_release.bootstrap_secrets.set_sensitive : s.name == "universalAuth.clientId" && s.value == var.infisical.auth.client_id])
     error_message = "should set universalAuth.clientId as sensitive value"
+  }
+}
+
+run "authelia_disabled_by_default" {
+  assert {
+    condition     = anytrue([for s in helm_release.bootstrap.set : s.name == "authelia.enabled" && s.value == "false"])
+    error_message = "should set authelia.enabled to false when authelia variable is null"
+  }
+
+  assert {
+    condition     = length(infisical_secret.authelia_users) == 0
+    error_message = "should not create authelia_users secret when authelia is disabled"
+  }
+}
+
+run "authelia_enabled" {
+  variables {
+    authelia = {
+      admin_password         = "s3cr3t-p4ssw0rd"
+      admin_password_version = 1
+    }
+  }
+
+  assert {
+    condition     = anytrue([for s in helm_release.bootstrap.set : s.name == "authelia.enabled" && s.value == "true"])
+    error_message = "should set authelia.enabled to true when authelia variable is set"
+  }
+
+  assert {
+    condition     = length(infisical_secret.authelia_users) == 1
+    error_message = "should create authelia_users secret when authelia is enabled"
   }
 }
