@@ -4,6 +4,8 @@ mock_provider "github" {}
 
 mock_provider "infisical" {}
 
+mock_provider "random" {}
+
 variables {
   cluster_name  = "dev-my-cluster"
   ghcr_username = "example-token"
@@ -76,12 +78,16 @@ run "authelia_disabled_by_default" {
     condition     = length(infisical_secret.authelia_users) == 0
     error_message = "should not create authelia_users secret when authelia is disabled"
   }
+
+  assert {
+    condition     = length(random_password.authelia_admin) == 0
+    error_message = "should not generate a password when authelia is disabled"
+  }
 }
 
 run "authelia_enabled" {
   variables {
     authelia = {
-      admin_password         = "s3cr3t-p4ssw0rd"
       admin_password_version = 1
     }
   }
@@ -94,5 +100,10 @@ run "authelia_enabled" {
   assert {
     condition     = length(infisical_secret.authelia_users) == 1
     error_message = "should create authelia_users secret when authelia is enabled"
+  }
+
+  assert {
+    condition     = length(random_password.authelia_admin) == 1
+    error_message = "should generate a random password when authelia is enabled"
   }
 }
