@@ -48,7 +48,7 @@ variable "authelia" {
   default     = null
 
   type = object({
-    admin_password         = string
+    admin_username         = optional(string, "admin")
     admin_password_version = number
   })
 }

@@ -18,5 +18,9 @@ terraform {
       source  = "infisical/infisical"
       version = "~> 0.16"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
 }
