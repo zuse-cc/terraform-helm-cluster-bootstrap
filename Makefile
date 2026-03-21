@@ -1,6 +1,6 @@
 PACKAGE_NAME ?= $(shell basename $(CURDIR))
 COMMIT ?= $(shell git rev-parse --short HEAD)
-VERSION ?= v0.1.0-$(COMMIT)
+VERSION ?= v0.2.0-$(COMMIT)
 
 PACKAGE_FILE ?= $(PACKAGE_NAME)-$(VERSION).tar.gz
 
