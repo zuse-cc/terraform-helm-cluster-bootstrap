@@ -1,3 +1,7 @@
+data "infisical_projects" "p" {
+  slug = var.infisical.project_slug
+}
+
 locals {
   argocd_namespace           = "argocd"
   external_secrets_namespace = "external-secrets"
@@ -18,6 +22,7 @@ locals {
     "letsencrypt.email"     = local.letsencrypt_email
     "ghcr.pullSecretName"   = local.ghcr_pull_secret_name
     "ghcr.username"         = var.ghcr_username
+    "authelia.enabled"      = var.authelia != null
   }
 }
 

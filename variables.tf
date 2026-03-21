@@ -36,9 +36,20 @@ variable "infisical" {
       client_id     = string
       client_secret = string
     })
+    # project_id = optional(string) # Required when authelia.enabled = true
     project_slug = string
     environment  = string
     path         = string
+  })
+}
+
+variable "authelia" {
+  description = "Enable in-cluster authelia instance for oauth"
+  default     = null
+
+  type = object({
+    admin_password         = string
+    admin_password_version = number
   })
 }
 
