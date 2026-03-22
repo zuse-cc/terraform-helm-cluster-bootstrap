@@ -12,7 +12,7 @@ variable "bootstrap_chart_repo" {
 }
 
 variable "argocd_chart_version" {
-  default = "9.4.2"
+  default = "9.4.15"
 }
 
 variable "argocd_chart_repo" {
