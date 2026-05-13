@@ -85,7 +85,7 @@ run "authelia_disabled_by_default" {
   }
 }
 
-run "authelia_enabled" {
+run "authelia_enabled_generates_password" {
   variables {
     authelia = {
       admin_password_version = 1
@@ -104,6 +104,30 @@ run "authelia_enabled" {
 
   assert {
     condition     = length(random_password.authelia_admin) == 1
-    error_message = "should generate a random password when authelia is enabled"
+    error_message = "should generate a random password when admin_password is null"
+  }
+}
+
+run "authelia_enabled_with_explicit_password" {
+  variables {
+    authelia = {
+      admin_password         = "my-super-secret"
+      admin_password_version = 1
+    }
+  }
+
+  assert {
+    condition     = anytrue([for s in helm_release.bootstrap.set : s.name == "authelia.enabled" && s.value == "true"])
+    error_message = "should set authelia.enabled to true when authelia variable is set"
+  }
+
+  assert {
+    condition     = length(infisical_secret.authelia_users) == 1
+    error_message = "should create authelia_users secret when authelia is enabled"
+  }
+
+  assert {
+    condition     = length(random_password.authelia_admin) == 0
+    error_message = "should not generate a random password when admin_password is explicitly provided"
   }
 }

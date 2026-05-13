@@ -1,5 +1,9 @@
+locals {
+  admin_password = var.authelia != null ? (var.authelia.admin_password != null ? var.authelia.admin_password : random_password.authelia_admin[0].result) : null
+}
+
 resource "random_password" "authelia_admin" {
-  count   = var.authelia != null ? 1 : 0
+  count   = var.authelia != null ? (var.authelia.admin_password == null ? 1 : 0) : 0
   length  = 24
   special = true
 
@@ -18,7 +22,7 @@ locals {
       users:
         ${var.authelia.admin_username}:
           displayname: Admin
-          password: "${bcrypt(random_password.authelia_admin[0].result)}"
+          password: "${bcrypt(local.admin_password)}"
           email: admin@${local.cluster_domain}
           groups:
             - admins
