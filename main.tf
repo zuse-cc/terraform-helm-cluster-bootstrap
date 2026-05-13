@@ -4,6 +4,7 @@ data "infisical_projects" "p" {
 
 locals {
   argocd_namespace           = "argocd"
+  argocd_endpoint            = "argocd.${local.cluster_domain}"
   external_secrets_namespace = "external-secrets"
   ghcr_pull_secret_name      = "ghcr-pull-secret"
   cluster_domain             = var.cluster_domain != null ? var.cluster_domain : "${var.cluster_name}.local"
@@ -57,7 +58,7 @@ resource "helm_release" "argocd" {
         ingress = {
           enabled          = true
           ingressClassName = "nginx"
-          hostname         = "argocd.${local.cluster_domain}"
+          hostname         = local.argocd_endpoint
           tls              = true
           annotations = {
             "cert-manager.io/cluster-issuer" = "cluster-issuer"
